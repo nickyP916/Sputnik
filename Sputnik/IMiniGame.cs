@@ -4,7 +4,7 @@
     {
         string Name { get; }
 
-        public void Play();
+        public Task Play();
 
     }
 }

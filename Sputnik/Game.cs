@@ -4,10 +4,10 @@
     {
         public static List<IMiniGame> MiniGames { get; set; }
 
-        public static void Play()
+        public static async Task Play()
         {
             var _numberCrunch = new NumberCrunch();
-            _numberCrunch.Play();
+            await _numberCrunch.Play();
         }
     }
 }
