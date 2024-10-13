@@ -23,11 +23,11 @@
                     var gameChoice = await Task.Run(() => ListenForInput(token), token);
                     if (!token.IsCancellationRequested)
                     {
-                        if (gameChoice != null && (int)gameChoice > 0 && (int)gameChoice <= MiniGames.Count)
+                        if (gameChoice != null && gameChoice > 0 && gameChoice <= MiniGames.Count)
                         {
                             awaitingGameChoice = false;
                             var game = MiniGames[(int)gameChoice - 1];
-                            await game.Play();
+                            await game.Play(token);
                         }
                         else
                         {
@@ -39,18 +39,20 @@
 
         }
 
-        private static async Task<int?> ListenForInput(CancellationToken token)
+        private static int? ListenForInput(CancellationToken token)
         {
-            
+
             while (!token.IsCancellationRequested)
             {
-                if(Console.KeyAvailable)
+                if (Console.KeyAvailable)
                 {
                     var input = Console.ReadLine();
                     if (int.TryParse(input, out var gameChoice))
                         return gameChoice;
+                    else
+                        return null;
                 }
-                
+
             }
             throw new OperationCanceledException();
         }

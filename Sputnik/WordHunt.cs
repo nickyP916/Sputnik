@@ -10,7 +10,7 @@ namespace Sputnik
     {
         public string Name => "Word Hunt";
 
-        public async Task Play()
+        public async Task Play(CancellationToken token)
         {
             Console.WriteLine($"You are playing {Name}!");
         }
