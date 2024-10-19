@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sputnik
+﻿namespace Sputnik
 {
     internal class WordHunt : IMiniGame
     {
@@ -21,11 +14,39 @@ namespace Sputnik
         {
             Console.WriteLine($"You are playing {Name}!");
 
+            List<string> words = new();
+            Console.WriteLine("Enter as many words as you can from the word:");
+            var letters = LetterGenerator.Generate(new Random());
+            Console.WriteLine(letters);
+            var timeoutTask = Task.Delay(10000);
+            while(!timeoutTask.IsCompleted) 
+            {
+                var inputTask = Task.Run(() => ListenForInput(token), token);
+                var completedTask = await Task.WhenAny(timeoutTask, inputTask);
+
+                if (completedTask == inputTask)
+                {
+                    var word = await inputTask;
+                    words.Add(word);
+                }
+                else
+                    break;
+                
+            }
+            Console.WriteLine("Time's up!");
+        }
+
+        private static string? ListenForInput(CancellationToken token)
+        {
             while (!token.IsCancellationRequested)
             {
-              
+                if (Console.KeyAvailable)
+                {
+                    var input = Console.ReadLine();
+                    return input;
+                }
             }
-            await Task.CompletedTask;
+            throw new OperationCanceledException();
         }
     }
 }
