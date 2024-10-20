@@ -14,7 +14,7 @@
         {
             Console.WriteLine($"You are playing {Name}!");
 
-            List<string> words = new();
+            //List<string> words = new();
             Console.WriteLine("Enter as many words as you can from the word:");
             var letters = LetterGenerator.Generate(new Random());
             Console.WriteLine(letters);
@@ -27,7 +27,10 @@
                 if (completedTask == inputTask)
                 {
                     var word = await inputTask;
-                    words.Add(word);
+                    //words.Add(word);
+                    //1. Check word exists in string
+                    
+                    //2. Check word exists in words api
                 }
                 else
                     break;
