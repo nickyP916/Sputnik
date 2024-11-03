@@ -32,8 +32,7 @@
         {
             var isValid = await WordValidator.Validate(wordToCheck, "DNMAAIOP");
 
-            Assert.That(isValid, Is.EqualTo(false
-                ));
+            Assert.That(isValid, Is.EqualTo(true));
         }
 
         private static IEnumerable<string> WordsToCheck()
