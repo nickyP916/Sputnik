@@ -1,6 +1,6 @@
 ﻿namespace Sputnik
 {
-    internal static class ScoreCalculator
+    internal static class NumberCrunchScoreCalculator
     {
         public static int CalculateScore(int _roundsWon)
         {

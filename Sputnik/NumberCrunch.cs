@@ -45,7 +45,7 @@
                     break;
                 }
             }
-            var totalScore = ScoreCalculator.CalculateScore(_roundsWon);
+            var totalScore = NumberCrunchScoreCalculator.CalculateScore(_roundsWon);
             Console.WriteLine($"Total Score: {totalScore}");
         }
 

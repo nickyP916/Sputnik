@@ -1,4 +1,6 @@
-﻿namespace Sputnik
+﻿using System.Diagnostics.Tracing;
+
+namespace Sputnik
 {
     internal class WordHunt : IMiniGame
     {
@@ -13,12 +15,13 @@
         public async Task Play(CancellationToken token)
         {
             Console.WriteLine($"You are playing {Name}!");
-
-            //List<string> words = new();
+            int points = 0;
+            List<string> words = new();
             Console.WriteLine("Enter as many words as you can from the word:");
             var letters = LetterGenerator.Generate(new Random());
+            //var possibleWords = await GetWordsFrom(letters);
             Console.WriteLine(letters);
-            var timeoutTask = Task.Delay(10000);
+            var timeoutTask = Task.Delay(30000);
             while(!timeoutTask.IsCompleted) 
             {
                 var inputTask = Task.Run(() => ListenForInput(token), token);
@@ -27,10 +30,11 @@
                 if (completedTask == inputTask)
                 {
                     var word = await inputTask;
-                    //words.Add(word);
-                    //1. Check word exists in string
-                    
-                    //2. Check word exists in words api
+                    if(word != null)
+                    {
+                        var isValid = await WordValidator.Validate(word, letters);
+                    }
+                        
                 }
                 else
                     break;
@@ -38,6 +42,7 @@
             }
             Console.WriteLine("Time's up!");
         }
+
 
         private static string? ListenForInput(CancellationToken token)
         {

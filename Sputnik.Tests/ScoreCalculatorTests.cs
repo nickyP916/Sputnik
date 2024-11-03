@@ -1,6 +1,6 @@
 namespace Sputnik.Tests
 {
-    public class ScoreCalculatorShould
+    public class NumberCrunchScoreCalculatorShould
     {
         [TestCase(0,0)]
         [TestCase(1,1)]
@@ -9,7 +9,7 @@ namespace Sputnik.Tests
         [TestCase(7,64)]
         public void Calculate_the_score(int score, int expected)
         {
-            var result = ScoreCalculator.CalculateScore(score);
+            var result = NumberCrunchScoreCalculator.CalculateScore(score);
 
             Assert.That(result, Is.EqualTo(expected));
         }

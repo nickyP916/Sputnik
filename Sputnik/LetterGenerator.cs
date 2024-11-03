@@ -3,6 +3,7 @@ namespace Sputnik
 {
     internal class LetterGenerator
     {
+        //TODO add weightings to the letters
         internal static string Generate(Random random)
         {
             var lengthOfResult = 9;
