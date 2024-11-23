@@ -44,10 +44,14 @@
                     }
                 }
                 else
+                {
+                    var position = Console.CursorTop;
+                    Console.SetCursorPosition(0, position + 1);
+                    Console.WriteLine("Time's up!");
                     break;
+                }
                 
             }
-            Console.WriteLine("Time's up!");
             var totalScore = WordHuntScoreCalculator.GetFinalScore();
             Console.WriteLine($"Total Score: {totalScore}");
         }
