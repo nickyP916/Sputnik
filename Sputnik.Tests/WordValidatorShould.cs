@@ -35,6 +35,16 @@
             Assert.That(isValid, Is.EqualTo(true));
         }
 
+        [TestCase("A")]
+        [TestCase("I")]
+        [TestCase("STREAMINGS")]
+        public async Task Must_only_accept_words_with_min_2_and_max_number_of_letters(string wordToCheck)
+        {
+            var isValid = await WordValidator.Validate(wordToCheck, "NSTRAEMIG");
+
+            Assert.That(isValid, Is.EqualTo(false));
+        }
+
         private static IEnumerable<string> WordsToCheck()
         {
             yield return "MAX";

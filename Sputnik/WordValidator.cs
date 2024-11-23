@@ -7,6 +7,9 @@
             if (String.IsNullOrEmpty(wordToCheck)) 
                 return false;
 
+            if (wordToCheck.Length == 1 || wordToCheck.Length > letters.Length)
+                return false;
+
             var existsInLetters = StringFinder.Find(letters, wordToCheck);
             if (!existsInLetters) 
                 return false;
