@@ -1,20 +1,24 @@
-﻿
-namespace Sputnik.Tests
+﻿namespace Sputnik.Tests
 {
     internal class WordHuntScoreCalculatorShould
     {
-        [Test]
-        public void Calculate_final_score()
-        {
-            var score = WordHuntScoreCalculator.Calculate(Words, 9);
+        private const int minWordLength = 2;
 
-            Assert.That(score, Is.EqualTo(13));
+        [TestCase("MAP", 3)]
+        [TestCase("DYNAMO", 6)]
+        [TestCase("PAD", 3)]
+        [TestCase("A", 0)]
+        public void Calculate_the_score(string wordToScore, int expectedScore)
+        {
+            var score = WordHuntScoreCalculator.Calculate(wordToScore, minWordLength, 9);
+
+            Assert.That(score, Is.EqualTo(expectedScore));
         }
 
         [Test]
         public void Give_double_points_for_a_word_with_the_maximum_number_of_letters()
         {
-            var score = WordHuntScoreCalculator.Calculate(NineLetterWord, 9);
+            var score = WordHuntScoreCalculator.Calculate("DANGEROUS", minWordLength, 9);
             Assert.That(score, Is.EqualTo(18));
         }
 
@@ -26,14 +30,6 @@ namespace Sputnik.Tests
                 yield return "A";
                 yield return "DYNAMO";
                 yield return "PAD";
-            }
-        }
-
-        private static IEnumerable<string> NineLetterWord
-        {
-            get
-            {
-                yield return "DANGEROUS";
             }
         }
     }

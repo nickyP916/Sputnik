@@ -4,6 +4,8 @@
     {
         public string Name => "Word Hunt";
 
+        private const int minWordLength = 2;
+
         //Basically like countdown
         //First with a given set of letters
         //then maybe allow user to pick letters
@@ -14,8 +16,8 @@
         {
             Console.WriteLine($"You are playing {Name}!");
             List<string> words = new();
-            Console.WriteLine("Enter as many words as you can from the word:");
             var letters = LetterGenerator.Generate(new Random());
+            Console.WriteLine("Enter as many words as you can from the word:");
             Console.WriteLine(letters);
             var timeoutTask = Task.Delay(30000);
             while(!timeoutTask.IsCompleted) 
@@ -32,11 +34,12 @@
                         if (isValid)
                         {
                             words.Add(word);
-                            Console.WriteLine("Nice one!");
+                            var points = WordHuntScoreCalculator.Calculate(word, minWordLength, letters.Length);
+                            Console.WriteLine(points + " points!");
                         }
                         else
                         {
-                            Console.WriteLine("Can't use that word");
+                            Console.WriteLine("Invalid word");
                         }
                     }
                 }
@@ -45,7 +48,7 @@
                 
             }
             Console.WriteLine("Time's up!");
-            var totalScore = WordHuntScoreCalculator.Calculate(words, 9);
+            var totalScore = WordHuntScoreCalculator.GetFinalScore();
             Console.WriteLine($"Total Score: {totalScore}");
         }
 

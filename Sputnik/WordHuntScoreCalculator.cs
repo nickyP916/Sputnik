@@ -3,24 +3,26 @@ namespace Sputnik
 {
     internal class WordHuntScoreCalculator
     {
-        internal static int Calculate(IEnumerable<string> words, int maxWordLength)
+        private static int score = 0;
+
+        internal static int Calculate(string word, int minWordLength, int maxWordLength)
         {
-            var score = 0;
-            foreach (var word in words)
-            {
-                int points = 0;
-                int length = word.Length;
+            var points = 0;
+            if (word.Length < minWordLength || word.Length > maxWordLength)
+                return points;
 
-                if (length == maxWordLength)
-                    points = length * 2;
-                else
-                    points = length;
+            var length = word.Length;
 
-                score += points;
-                Console.WriteLine(points + " points!");
-            }
+            if (length == maxWordLength)
+                points = length * 2;
+            else
+                points = length;
 
-            return score;
+            score += points;
+
+            return points;
         }
+
+        internal static int GetFinalScore() => score;
     }
 }
