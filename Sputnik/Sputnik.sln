@@ -5,7 +5,11 @@ VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sputnik", "Sputnik.csproj", "{7A5A949E-9418-476F-92A2-FA0FC5A38C28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sputnik.Tests", "..\Sputnik.Tests\Sputnik.Tests.csproj", "{9E20E32C-373E-4E75-888E-F70A1B41DA7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sputnik.Tests", "..\Sputnik.Tests\Sputnik.Tests.csproj", "{9E20E32C-373E-4E75-888E-F70A1B41DA7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Draw", "..\Draw\Draw.csproj", "{EB276642-6A35-4998-8B01-B0DF995F6BEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Draw.Tests", "..\Draw.Tests\Draw.Tests.csproj", "{249814C8-E299-480D-A308-752008248962}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{9E20E32C-373E-4E75-888E-F70A1B41DA7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E20E32C-373E-4E75-888E-F70A1B41DA7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E20E32C-373E-4E75-888E-F70A1B41DA7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB276642-6A35-4998-8B01-B0DF995F6BEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB276642-6A35-4998-8B01-B0DF995F6BEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB276642-6A35-4998-8B01-B0DF995F6BEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB276642-6A35-4998-8B01-B0DF995F6BEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{249814C8-E299-480D-A308-752008248962}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{249814C8-E299-480D-A308-752008248962}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{249814C8-E299-480D-A308-752008248962}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{249814C8-E299-480D-A308-752008248962}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
