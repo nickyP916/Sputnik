@@ -14,6 +14,8 @@
             }
             catch (OperationCanceledException)
             {
+                var position = Console.CursorTop;
+                Console.SetCursorPosition(0, position + 1);
                 Console.WriteLine("Cancelled");
             }
             finally

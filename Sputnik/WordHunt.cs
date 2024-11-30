@@ -20,7 +20,7 @@
             Console.WriteLine("Enter as many words as you can from the word:");
             Console.WriteLine(letters);
             var timeoutTask = Task.Delay(30000);
-            while(!timeoutTask.IsCompleted) 
+            while(!timeoutTask.IsCompleted && !token.IsCancellationRequested) 
             {
                 var inputTask = Task.Run(() => ListenForInput(token), token);
                 var completedTask = await Task.WhenAny(timeoutTask, inputTask);
