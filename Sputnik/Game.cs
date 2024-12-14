@@ -9,7 +9,8 @@
         {
             while (!token.IsCancellationRequested)
             {
-                MiniGames = [new NumberCrunch(), new WordHunt()];
+
+                MiniGames = [new NumberCrunch(), new WordHunt(), new PatternMatch()];
 
                 Console.WriteLine("Select your game");
                 for (int i = 0; i < MiniGames.Count; i++)

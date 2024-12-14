@@ -16,4 +16,8 @@
 		</AssemblyAttribute>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Draw\Draw.csproj" />
+	</ItemGroup>
+
 </Project>
