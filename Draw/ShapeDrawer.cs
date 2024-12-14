@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Draw
@@ -34,11 +35,25 @@ namespace Draw
             var shape = '\u25A0';
             var colour = ConsoleColor.Blue;
             var markColour = ConsoleColor.Green;
-            var gapSize = 1;
+            var gapSize = 2;
             var minMarks = shapesPerSide;
             var maxMarks = shapesPerSide * 2;
 
             bool[,] markPositions = GenerateMarkPositions(shapesPerSide, minMarks, maxMarks);
+            var grid1Index = new Random().Next(numGrids - 1);
+            int grid2Index = new Random().Next(numGrids - 1);
+            while (grid2Index == grid1Index)
+            {
+                grid2Index = new Random().Next(numGrids - 1);
+            }
+            var matchingGridIndexes = new Tuple<int, int>( grid1Index, grid2Index );
+
+            int numUniqueGrids = numGrids - 2;
+            var uniqueGrids = GenerateUniqueGrids(shapesPerSide, minMarks, maxMarks, numUniqueGrids, markPositions);
+
+            var gridList = uniqueGrids.ToList();
+            gridList.Insert(matchingGridIndexes.Item1, markPositions);
+            gridList.Insert(matchingGridIndexes.Item2, markPositions);
 
             var gridTop = Console.CursorTop;
             for (int g = 0; g < numGrids; g++)
@@ -46,13 +61,14 @@ namespace Draw
                 int gridLeft = (shapesPerSide + gapSize) * g;
                 Console.SetCursorPosition(gridLeft, gridTop);
 
-                for (int s = 0; s < shapesPerSide; s++)
+                for (int y = 0; y < shapesPerSide; y++)
                 {
-                    Console.SetCursorPosition(gridLeft, gridTop + s);
+                    Console.SetCursorPosition(gridLeft, gridTop + y); //Hitting System Argument exc, buffer size? related to console size perhaps?
 
-                    for (int i = 0; i < shapesPerSide; i++)
+                    for (int x = 0; x < shapesPerSide; x++)
                     {
-                        if (markPositions[i, s])
+                        var positions = gridList.ElementAt(g);
+                        if (positions[x, y])
                             Console.ForegroundColor = markColour;
                         else
                             Console.ForegroundColor = colour;
@@ -66,6 +82,21 @@ namespace Draw
             }
 
             Console.SetCursorPosition(0, Console.CursorTop + 1);
+        }
+
+        private static HashSet<bool[,]> GenerateUniqueGrids(int shapesPerSide, int minMarks, int maxMarks, int numGrids, bool[,] marksToOffset)
+        {
+            var uniqueGrids = new HashSet<bool[,]>();
+
+            while(uniqueGrids.Count < numGrids)
+            {
+                for (int i = 0; i < numGrids; i++)
+                {
+                    uniqueGrids.Add(GenerateMarkPositions(shapesPerSide, minMarks, maxMarks));
+                }
+            }
+
+            return uniqueGrids;
         }
 
         private static bool[,] GenerateMarkPositions(int shapesPerSide, int minMarks, int maxMarks)
