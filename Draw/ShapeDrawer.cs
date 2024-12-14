@@ -1,8 +1,4 @@
-﻿using System.Data;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-
-namespace Draw
+﻿namespace Draw
 {
     public static class ShapeDrawer
     {
@@ -30,16 +26,19 @@ namespace Draw
             }
         }
 
-        public static void DrawShapeSequence(int shapesPerSide, int numGrids)
+        public static void DrawShapeSequence(int gridWidth, int numGrids)
         {
             var shape = '\u25A0';
             var colour = ConsoleColor.Blue;
             var markColour = ConsoleColor.Green;
-            var gapSize = 2;
-            var minMarks = shapesPerSide;
-            var maxMarks = shapesPerSide * 2;
+            var gridGapSize = 2;
+            var xGapSize = 1;
+            var gapsPerGrid = gridWidth * xGapSize;
+            var gridHeight = gridWidth;
+            var minMarks = gridHeight;
+            var maxMarks = gridWidth * 2;
 
-            bool[,] markPositions = GenerateMarkPositions(shapesPerSide, minMarks, maxMarks);
+            bool[,] markPositions = GenerateMarkPositions(gridWidth, gridHeight, minMarks, maxMarks);
             var grid1Index = new Random().Next(numGrids - 1);
             int grid2Index = new Random().Next(numGrids - 1);
             while (grid2Index == grid1Index)
@@ -49,7 +48,7 @@ namespace Draw
             var matchingGridIndexes = new Tuple<int, int>( grid1Index, grid2Index );
 
             int numUniqueGrids = numGrids - 2;
-            var uniqueGrids = GenerateUniqueGrids(shapesPerSide, minMarks, maxMarks, numUniqueGrids, markPositions);
+            var uniqueGrids = GenerateUniqueGrids(gridWidth, gridHeight, minMarks, maxMarks, numUniqueGrids, markPositions);
 
             var gridList = uniqueGrids.ToList();
             gridList.Insert(matchingGridIndexes.Item1, markPositions);
@@ -58,14 +57,14 @@ namespace Draw
             var gridTop = Console.CursorTop;
             for (int g = 0; g < numGrids; g++)
             {
-                int gridLeft = (shapesPerSide + gapSize) * g;
+                int gridLeft = (gridWidth + gapsPerGrid + gridGapSize) * g;
                 Console.SetCursorPosition(gridLeft, gridTop);
 
-                for (int y = 0; y < shapesPerSide; y++)
+                for (int y = 0; y < gridHeight; y++)
                 {
                     Console.SetCursorPosition(gridLeft, gridTop + y); //Hitting System Argument exc, buffer size? related to console size perhaps?
 
-                    for (int x = 0; x < shapesPerSide; x++)
+                    for (int x = 0; x < gridWidth; x++)
                     {
                         var positions = gridList.ElementAt(g);
                         if (positions[x, y])
@@ -75,8 +74,9 @@ namespace Draw
 
                         Console.Write(shape);
                         Console.ResetColor();
+                        Console.SetCursorPosition(Console.CursorLeft + xGapSize, Console.CursorTop);
                     }
-
+                    
 
                 }
             }
@@ -84,7 +84,7 @@ namespace Draw
             Console.SetCursorPosition(0, Console.CursorTop + 1);
         }
 
-        private static HashSet<bool[,]> GenerateUniqueGrids(int shapesPerSide, int minMarks, int maxMarks, int numGrids, bool[,] marksToOffset)
+        private static HashSet<bool[,]> GenerateUniqueGrids(int gridWidth, int gridHeight, int minMarks, int maxMarks, int numGrids, bool[,] marksToOffset)
         {
             var uniqueGrids = new HashSet<bool[,]>();
 
@@ -92,23 +92,23 @@ namespace Draw
             {
                 for (int i = 0; i < numGrids; i++)
                 {
-                    uniqueGrids.Add(GenerateMarkPositions(shapesPerSide, minMarks, maxMarks));
+                    uniqueGrids.Add(GenerateMarkPositions(gridWidth, gridHeight, minMarks, maxMarks));
                 }
             }
 
             return uniqueGrids;
         }
 
-        private static bool[,] GenerateMarkPositions(int shapesPerSide, int minMarks, int maxMarks)
+        private static bool[,] GenerateMarkPositions(int gridWidth,int gridHeight, int minMarks, int maxMarks)
         {
-            bool[,] markPositions = new bool[shapesPerSide, shapesPerSide];
+            bool[,] markPositions = new bool[gridWidth, gridHeight];
 
             var numMarks = new Random().Next(minMarks, maxMarks);
 
             for (int i = 0; i < numMarks; i++)
             {
-                var xPos = new Random().Next(shapesPerSide);
-                var yPos = new Random().Next(shapesPerSide);
+                var xPos = new Random().Next(gridWidth);
+                var yPos = new Random().Next(gridHeight);
 
                 markPositions[xPos, yPos] = true;
             }
