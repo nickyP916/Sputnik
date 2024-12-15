@@ -76,8 +76,6 @@
                         Console.ResetColor();
                         Console.SetCursorPosition(Console.CursorLeft + xGapSize, Console.CursorTop);
                     }
-                    
-
                 }
             }
 

@@ -8,9 +8,6 @@
 
         private int _roundsWon = 0;
 
-        private bool _timeLeft = true;
-        private bool _playing => _roundsWon < _maxRounds;
-
         public async Task Play(CancellationToken token)
         {
             Console.WriteLine($"You are playing {Name}!");

@@ -10,7 +10,44 @@ namespace Sputnik
         {
             Console.WriteLine($"You are playing {Name}!");
 
-            ShapeDrawer.DrawShapeSequence(3, 4);
+            var timeoutTask = Task.Delay(5000);
+            while(!timeoutTask.IsCompleted && !token.IsCancellationRequested)
+            {
+                ShapeDrawer.DrawShapeSequence(3, 4);
+
+                Console.WriteLine("Which two are the same?");
+
+                var inputTask = Task.Run(() => ListenForInput(token), token);
+                var completedTask = await Task.WhenAny(timeoutTask, inputTask);
+
+                if (completedTask == inputTask)
+                {
+                    var response = await inputTask;
+                    Console.WriteLine("you selected " + response);
+                }
+                else
+                {
+                    var position = Console.CursorTop;
+                    Console.SetCursorPosition(0, position + 1);
+                    Console.WriteLine("Time's up!");
+                    break;
+                }
+            }
+
+        }
+
+
+        private static string? ListenForInput(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                if (Console.KeyAvailable)
+                {
+                    var input = Console.ReadLine();
+                    return input;
+                }
+            }
+            throw new OperationCanceledException();
         }
     }
 }
