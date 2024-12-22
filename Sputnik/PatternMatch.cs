@@ -1,8 +1,9 @@
 ﻿using Draw;
+using Sputnik.Services;
 
 namespace Sputnik
 {
-    internal class PatternMatch : IMiniGame
+    internal class PatternMatch(IInputListener inputListener) : IMiniGame
     {
         public string Name => "Pattern Match";
 
@@ -17,7 +18,7 @@ namespace Sputnik
 
                 Console.WriteLine("Which two are the same?");
 
-                var inputTask = Task.Run(() => ListenForInput(token), token);
+                var inputTask = Task.Run(() => inputListener.ListenForInput(token), token);
                 var completedTask = await Task.WhenAny(timeoutTask, inputTask);
 
                 if (completedTask == inputTask)
@@ -36,18 +37,5 @@ namespace Sputnik
 
         }
 
-
-        private static string? ListenForInput(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                if (Console.KeyAvailable)
-                {
-                    var input = Console.ReadLine();
-                    return input;
-                }
-            }
-            throw new OperationCanceledException();
-        }
     }
 }

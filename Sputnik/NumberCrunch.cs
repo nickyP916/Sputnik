@@ -1,6 +1,8 @@
-﻿namespace Sputnik
+﻿using Sputnik.Services;
+
+namespace Sputnik
 {
-    internal class NumberCrunch : IMiniGame
+    internal class NumberCrunch(IInputListener inputListener) : IMiniGame
     {
         public string Name => "Number Crunch";
 
@@ -19,7 +21,7 @@
 
                 Console.WriteLine($"What is {number1} + {number2}?");
 
-                var inputTask = Task.Run(() => ListenForInput(token), token);
+                var inputTask = Task.Run(() => ListenForNumberInput(token), token);
                 if (await Task.WhenAny(inputTask, Task.Delay(5000)) == inputTask)
                 {
                     if(!token.IsCancellationRequested)
@@ -46,21 +48,13 @@
             Console.WriteLine($"Total Score: {totalScore}");
         }
 
-        private static int? ListenForInput(CancellationToken token)
+        private int? ListenForNumberInput(CancellationToken token)
         {
-            while (!token.IsCancellationRequested)
-            {
-                if (Console.KeyAvailable)
-                {
-                    var input = Console.ReadLine();
-                    if (int.TryParse(input, out var answer))
-                        return answer;
-                    else
-                        return null;
-                }
-
-            }
-            throw new OperationCanceledException();
+            var input = inputListener.ListenForInput(token);
+            if (int.TryParse(input, out var answer))
+                return answer;
+            else
+                return null;
         }
     }
 }

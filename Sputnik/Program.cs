@@ -1,4 +1,7 @@
-﻿namespace Sputnik
+﻿using Microsoft.Extensions.DependencyInjection;
+using Sputnik.Services;
+
+namespace Sputnik
 {
     internal class Program
     {
@@ -8,9 +11,14 @@
         {
             Console.CancelKeyPress += Console_CancelKeyPress;
 
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            var servicesProvider = services.BuildServiceProvider();
+
             try
             {
-                await Game.Play(_cts.Token);
+                var game = servicesProvider.GetRequiredService<Game>();
+                await game.Play(_cts.Token);
             }
             catch (OperationCanceledException)
             {
@@ -29,6 +37,15 @@
         {
             e.Cancel = true;
             _cts.Cancel();
+        }
+
+        public static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IInputListener, InputListener>();
+            services.AddTransient<WordHunt>();
+            services.AddTransient<NumberCrunch>();
+            services.AddTransient<PatternMatch>();
+            services.AddTransient<Game>();
         }
     }
 }

@@ -4,7 +4,6 @@
     {
         string Name { get; }
 
-        public Task Play(CancellationToken token);
-
+        Task Play(CancellationToken token);
     }
 }

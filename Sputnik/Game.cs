@@ -1,16 +1,24 @@
-﻿namespace Sputnik
-{
-    static internal class Game
-    {
-        public static List<IMiniGame> MiniGames { get; set; }
+﻿using Microsoft.Extensions.DependencyInjection;
 
-        private static bool awaitingGameChoice;
-        public static async Task Play(CancellationToken token)
+namespace Sputnik
+{
+    internal class Game(IServiceProvider serviceProvider)
+    {
+        public required List<IMiniGame> MiniGames { get; set; }
+
+        private bool awaitingGameChoice;
+        private readonly IServiceProvider serviceProvider = serviceProvider;
+
+        public async Task Play(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
             {
-
-                MiniGames = [new NumberCrunch(), new WordHunt(), new PatternMatch()];
+                MiniGames = new List<IMiniGame>
+                {
+                    serviceProvider.GetRequiredService<NumberCrunch>(),
+                    serviceProvider.GetRequiredService<WordHunt>(),
+                    serviceProvider.GetRequiredService <PatternMatch>()
+                };
 
                 Console.WriteLine("Select your game");
                 for (int i = 0; i < MiniGames.Count; i++)

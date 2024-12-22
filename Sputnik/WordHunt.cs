@@ -1,16 +1,12 @@
-﻿namespace Sputnik
+﻿using Sputnik.Services;
+
+namespace Sputnik
 {
-    internal class WordHunt : IMiniGame
+    internal class WordHunt(IInputListener inputListener) : IMiniGame
     {
         public string Name => "Word Hunt";
 
         private const int minWordLength = 2;
-
-        //Basically like countdown
-        //First with a given set of letters
-        //then maybe allow user to pick letters
-        //timed
-        //allow user to choose just like countdown (or at least the last two chars)
 
         public async Task Play(CancellationToken token)
         {
@@ -22,7 +18,7 @@
             var timeoutTask = Task.Delay(30000);
             while(!timeoutTask.IsCompleted && !token.IsCancellationRequested) 
             {
-                var inputTask = Task.Run(() => ListenForInput(token), token);
+                var inputTask = Task.Run(() => inputListener.ListenForInput(token), token);
                 var completedTask = await Task.WhenAny(timeoutTask, inputTask);
 
                 if (completedTask == inputTask)
@@ -54,20 +50,6 @@
             }
             var totalScore = WordHuntScoreCalculator.GetFinalScore();
             Console.WriteLine($"Total Score: {totalScore}");
-        }
-
-
-        private static string? ListenForInput(CancellationToken token)
-        {
-            while (!token.IsCancellationRequested)
-            {
-                if (Console.KeyAvailable)
-                {
-                    var input = Console.ReadLine();
-                    return input;
-                }
-            }
-            throw new OperationCanceledException();
         }
     }
 }
