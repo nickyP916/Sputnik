@@ -49,12 +49,13 @@ namespace Sputnik.Tests
                 }
             };
 
-            var matchingGridIndexes = new int[] { 1, 3 };
+            var matchingGridIndexes = new int[] { 2, 0 };
 
             var result = ShapeDrawer.CombineUniqueAndMatchingGrids(markPositionsForMatchingGrids, matchingGridIndexes, uniqueGrids);
 
             var expectedResult = new List<bool[,]>
             {
+                markPositionsForMatchingGrids,
                 new bool[3, 3]
                 {
                     {false, true, false },
@@ -68,7 +69,6 @@ namespace Sputnik.Tests
                     {false, false, false},
                     {true, true, false}
                 },
-                markPositionsForMatchingGrids
             };
 
             Assert.That(result, Is.EqualTo(expectedResult));

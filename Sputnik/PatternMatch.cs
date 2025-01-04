@@ -11,20 +11,31 @@ namespace Sputnik
         {
             Console.WriteLine($"You are playing {Name}!");
 
-            var timeoutTask = Task.Delay(5000);
+            var timeoutTask = Task.Delay(15000);
             while(!timeoutTask.IsCompleted && !token.IsCancellationRequested)
             {
-                ShapeDrawer.DrawShapeSequence(3, 4);
+                var matchingIndexes = ShapeDrawer.DrawShapeSequence(3, 4);
 
                 Console.WriteLine("Which two are the same?");
 
-                var inputTask = Task.Run(() => inputListener.ListenForInput(token), token);
+                var inputTask = Task.Run(() => ListenForNumberInput(token), token);
                 var completedTask = await Task.WhenAny(timeoutTask, inputTask);
 
                 if (completedTask == inputTask)
                 {
                     var response = await inputTask;
-                    Console.WriteLine("you selected " + response);
+                    if(response != null)
+                    {
+                        var indexResponse = response.Select(x => x - 1).ToArray();
+                        if (indexResponse!.Order().SequenceEqual(matchingIndexes.Order()))
+                        {
+                            Console.WriteLine("Correct!");
+                        }
+                        else
+                            Console.WriteLine("Incorrect!");
+                    }
+                    else
+                        Console.WriteLine("enter two numbers");
                 }
                 else
                 {
@@ -35,6 +46,30 @@ namespace Sputnik
                 }
             }
 
+        }
+        public int[]? ListenForNumberInput(CancellationToken token)
+        {
+            var input = inputListener.ListenForInput(token);
+            var results = new int[2];
+            if (input!= null && input.Length == 2)
+            {
+                for (int i = 0; i < input.Length; i++)
+                {
+                    char item = input[i];
+                    if (int.TryParse(item.ToString(), out var result))
+                    {
+                        results[i] = result;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+
+                return results;
+            }
+            else
+                return null;
         }
 
     }
