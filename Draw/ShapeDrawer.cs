@@ -2,31 +2,7 @@
 {
     public static class ShapeDrawer
     {
-        public static void DrawShape(int x, int y, char shape, ConsoleColor colour)
-        {
-            Console.SetCursorPosition(x, y);
-            var position = Console.CursorTop;
-            Console.SetCursorPosition(0, position + 1);
-            Console.ForegroundColor = colour;
-            Console.Write(shape);
-            Console.ResetColor();
-        }
-
-        public static void DrawShapeSequence(List<char> shapes, List<ConsoleColor> colours)
-        {
-            for (int i = 0; i < shapes.Count; i++)
-            {
-                char shape = shapes[i];
-                foreach (var colour in colours)
-                {
-                    Console.ForegroundColor = colour;
-                    Console.Write(shape);
-                    Console.ResetColor();
-                }
-            }
-        }
-
-        public static void DrawShapeSequence(int gridWidth, int numGrids)
+        public static int[] DrawShapeSequence(int gridWidth, int numGrids)
         {
             var shape = '\u25A0';
             var colour = ConsoleColor.Blue;
@@ -38,21 +14,12 @@
             var minMarks = gridHeight;
             var maxMarks = gridWidth * 2;
 
-            bool[,] markPositions = GenerateMarkPositions(gridWidth, gridHeight, minMarks, maxMarks);
-            var grid1Index = new Random().Next(numGrids - 1);
-            int grid2Index = new Random().Next(numGrids - 1);
-            while (grid2Index == grid1Index)
-            {
-                grid2Index = new Random().Next(numGrids - 1);
-            }
-            var matchingGridIndexes = new Tuple<int, int>( grid1Index, grid2Index );
+            bool[,] markPositionsPerGrid = GenerateMarkPositionsPerGrid(gridWidth, gridHeight, minMarks, maxMarks);
+            int[] matchingGridIndexes = GenerateIndexesFor2MatchingGrids(numGrids);
 
-            int numUniqueGrids = numGrids - 2;
-            var uniqueGrids = GenerateUniqueGrids(gridWidth, gridHeight, minMarks, maxMarks, numUniqueGrids, markPositions);
-
-            var gridList = uniqueGrids.ToList();
-            gridList.Insert(matchingGridIndexes.Item1, markPositions);
-            gridList.Insert(matchingGridIndexes.Item2, markPositions);
+            int numUniqueGrids = numGrids - matchingGridIndexes.Length;
+            var uniqueGrids = GenerateUniqueGrids(gridWidth, gridHeight, minMarks, maxMarks, numUniqueGrids);
+            List<bool[,]> gridList = CombineUniqueAndMatchingGrids(markPositionsPerGrid, matchingGridIndexes, uniqueGrids);
 
             var gridTop = Console.CursorTop;
             for (int g = 0; g < numGrids; g++)
@@ -80,9 +47,36 @@
             }
 
             Console.SetCursorPosition(0, Console.CursorTop + 1);
+
+            return matchingGridIndexes;
         }
 
-        private static HashSet<bool[,]> GenerateUniqueGrids(int gridWidth, int gridHeight, int minMarks, int maxMarks, int numGrids, bool[,] marksToOffset)
+        public static List<bool[,]> CombineUniqueAndMatchingGrids(bool[,] markPositionsForMatchingGrids, int[] matchingGridIndexes, HashSet<bool[,]> uniqueGrids)
+        {
+            var gridList = uniqueGrids.ToList();
+            for (int i = 0; i < matchingGridIndexes.Length; i++)
+            {
+                int matchingIndex = matchingGridIndexes[i];
+                gridList.Insert(matchingIndex, markPositionsForMatchingGrids);
+            }
+
+            return gridList;
+        }
+
+        private static int[] GenerateIndexesFor2MatchingGrids(int numGrids)
+        {
+            var grid1Index = new Random().Next(numGrids - 1);
+            int grid2Index = new Random().Next(numGrids - 1);
+            while (grid2Index == grid1Index)
+            {
+                grid2Index = new Random().Next(numGrids - 1);
+            }
+            var matchingGridIndexes = new int[2] { grid1Index, grid2Index };
+            matchingGridIndexes.Order();
+            return matchingGridIndexes;
+        }
+
+        public static HashSet<bool[,]> GenerateUniqueGrids(int gridWidth, int gridHeight, int minMarks, int maxMarks, int numGrids)
         {
             var uniqueGrids = new HashSet<bool[,]>();
 
@@ -90,14 +84,14 @@
             {
                 for (int i = 0; i < numGrids; i++)
                 {
-                    uniqueGrids.Add(GenerateMarkPositions(gridWidth, gridHeight, minMarks, maxMarks));
+                    uniqueGrids.Add(GenerateMarkPositionsPerGrid(gridWidth, gridHeight, minMarks, maxMarks));
                 }
             }
 
             return uniqueGrids;
         }
 
-        private static bool[,] GenerateMarkPositions(int gridWidth,int gridHeight, int minMarks, int maxMarks)
+        public static bool[,] GenerateMarkPositionsPerGrid(int gridWidth,int gridHeight, int minMarks, int maxMarks)
         {
             bool[,] markPositions = new bool[gridWidth, gridHeight];
 
