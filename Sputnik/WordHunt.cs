@@ -43,10 +43,12 @@ namespace Sputnik
                 }
                 else
                 {
+                    cts.Cancel();  
+
                     var position = Console.CursorTop;
                     Console.SetCursorPosition(0, position + 1);
+
                     Console.WriteLine("Time's up!");
-                    cts.Cancel();  
                     break;
                 }
                 
