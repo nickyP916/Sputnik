@@ -20,7 +20,8 @@ namespace Sputnik
 
                 Console.WriteLine("Which two are the same?");
 
-                var inputTask = Task.Run(() => ListenForNumberInput(token), token);
+                var cts = new CancellationTokenSource();
+                var inputTask = Task.Run(() => ListenForNumberInput(cts.Token), token);
                 var completedTask = await Task.WhenAny(timeoutTask, inputTask);
 
                 if (completedTask == inputTask)
@@ -45,6 +46,7 @@ namespace Sputnik
                     var position = Console.CursorTop;
                     Console.SetCursorPosition(0, position + 1);
                     Console.WriteLine("Time's up!");
+                    cts.Cancel();
                     //var totalScore = NumberCrunchScoreCalculator.CalculateScore(_roundsWon);
                     //Console.WriteLine($"Total Score: {totalScore}");
                     break;

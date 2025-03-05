@@ -15,10 +15,11 @@ namespace Sputnik
             var letters = LetterGenerator.Generate(new Random());
             Console.WriteLine("Enter as many words as you can from the word:");
             Console.WriteLine(letters);
-            var timeoutTask = Task.Delay(30000);
+            var timeoutTask = Task.Delay(5000);
             while(!timeoutTask.IsCompleted && !token.IsCancellationRequested) 
             {
-                var inputTask = Task.Run(() => inputListener.ListenForInput(token), token);
+                var cts = new CancellationTokenSource();
+                var inputTask = Task.Run(() => inputListener.ListenForInput(cts.Token), token);
                 var completedTask = await Task.WhenAny(timeoutTask, inputTask);
 
                 if (completedTask == inputTask)
@@ -44,6 +45,7 @@ namespace Sputnik
                     var position = Console.CursorTop;
                     Console.SetCursorPosition(0, position + 1);
                     Console.WriteLine("Time's up!");
+                    cts.Cancel();  
                     break;
                 }
                 

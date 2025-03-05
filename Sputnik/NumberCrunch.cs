@@ -21,7 +21,8 @@ namespace Sputnik
 
                 Console.WriteLine($"What is {number1} + {number2}?");
 
-                var inputTask = Task.Run(() => ListenForNumberInput(token), token);
+                var cts = new CancellationTokenSource();
+                var inputTask = Task.Run(() => ListenForNumberInput(cts.Token), token);
                 if (await Task.WhenAny(inputTask, Task.Delay(5000)) == inputTask)
                 {
                     if(!token.IsCancellationRequested)
@@ -41,6 +42,7 @@ namespace Sputnik
                     var position = Console.CursorTop;
                     Console.SetCursorPosition(0, position + 1);
                     Console.WriteLine("Time's up!");
+                    cts.Cancel();
                     break;
                 }
             }
