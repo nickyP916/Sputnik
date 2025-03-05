@@ -53,6 +53,7 @@
 
         public static List<bool[,]> CombineUniqueAndMatchingGrids(bool[,] markPositionsForMatchingGrids, int[] matchingGridIndexes, HashSet<bool[,]> uniqueGrids)
         {
+            matchingGridIndexes = matchingGridIndexes.OrderBy(x => x).ToArray();
             var gridList = uniqueGrids.ToList();
             for (int i = 0; i < matchingGridIndexes.Length; i++)
             {

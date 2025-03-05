@@ -7,6 +7,8 @@ namespace Sputnik
     {
         public string Name => "Pattern Match";
 
+        private int _roundsWon = 0;
+
         public async Task Play(CancellationToken token)
         {
             Console.WriteLine($"You are playing {Name}!");
@@ -30,7 +32,8 @@ namespace Sputnik
                         if (indexResponse!.Order().SequenceEqual(matchingIndexes.Order()))
                         {
                             Console.WriteLine("Correct!");
-                        }
+                            _roundsWon++;
+    }
                         else
                             Console.WriteLine("Incorrect!");
                     }
@@ -42,6 +45,8 @@ namespace Sputnik
                     var position = Console.CursorTop;
                     Console.SetCursorPosition(0, position + 1);
                     Console.WriteLine("Time's up!");
+                    //var totalScore = NumberCrunchScoreCalculator.CalculateScore(_roundsWon);
+                    //Console.WriteLine($"Total Score: {totalScore}");
                     break;
                 }
             }
