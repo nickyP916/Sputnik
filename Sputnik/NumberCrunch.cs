@@ -22,7 +22,8 @@ namespace Sputnik
                 Console.WriteLine($"What is {number1} + {number2}?");
 
                 var cts = new CancellationTokenSource();
-                var inputTask = Task.Run(() => ListenForNumberInput(cts.Token), token);
+                var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
+                var inputTask = Task.Run(() => ListenForNumberInput(combinedTcs.Token));
                 if (await Task.WhenAny(inputTask, Task.Delay(5000)) == inputTask)
                 {
                     if(!token.IsCancellationRequested)

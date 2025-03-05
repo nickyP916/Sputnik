@@ -14,14 +14,14 @@ namespace Sputnik
             Console.WriteLine($"You are playing {Name}!");
 
             var timeoutTask = Task.Delay(15000);
-            while(!timeoutTask.IsCompleted && !token.IsCancellationRequested)
+            
+            while (!timeoutTask.IsCompleted && !token.IsCancellationRequested)
             {
                 var matchingIndexes = ShapeDrawer.DrawShapeSequence(3, 4);
-
                 Console.WriteLine("Which two are the same?");
-
                 var cts = new CancellationTokenSource();
-                var inputTask = Task.Run(() => ListenForNumberInput(cts.Token), token);
+                var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
+                var inputTask = Task.Run(() => ListenForNumberInput(combinedTcs.Token));
                 var completedTask = await Task.WhenAny(timeoutTask, inputTask);
 
                 if (completedTask == inputTask)
@@ -52,7 +52,6 @@ namespace Sputnik
                     break;
                 }
             }
-
         }
         public int[]? ListenForNumberInput(CancellationToken token)
         {

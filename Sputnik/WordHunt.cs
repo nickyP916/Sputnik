@@ -19,7 +19,8 @@ namespace Sputnik
             while(!timeoutTask.IsCompleted && !token.IsCancellationRequested) 
             {
                 var cts = new CancellationTokenSource();
-                var inputTask = Task.Run(() => inputListener.ListenForInput(cts.Token), token);
+                var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
+                var inputTask = Task.Run(() => inputListener.ListenForInput(combinedTcs.Token));
                 var completedTask = await Task.WhenAny(timeoutTask, inputTask);
 
                 if (completedTask == inputTask)
