@@ -1,9 +1,8 @@
-﻿using Draw;
-using Sputnik.Services;
+﻿using Sputnik.Services;
 
 namespace Sputnik
 {
-    internal class PatternMatch(IInputListener inputListener) : IMiniGame
+    internal class PatternMatch(IInputListener inputListener, IShapeDrawer shapeDrawer) : IMiniGame
     {
         public string Name => "Pattern Match";
 
@@ -17,7 +16,7 @@ namespace Sputnik
             
             while (!timeoutTask.IsCompleted && !token.IsCancellationRequested)
             {
-                var matchingIndexes = ShapeDrawer.DrawShapeSequence(3, 4);
+                var matchingIndexes = shapeDrawer.DrawShapeSequence(3, 4);
                 Console.WriteLine("Which two are the same?");
                 var cts = new CancellationTokenSource();
                 var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);

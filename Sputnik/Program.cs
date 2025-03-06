@@ -42,6 +42,8 @@ namespace Sputnik
         public static void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IInputListener, InputListener>();
+            services.AddSingleton<IShapeDrawer, ShapeDrawer>();
+            services.AddSingleton<IConsoleService , ConsoleService>();
             services.AddTransient<WordHunt>();
             services.AddTransient<NumberCrunch>();
             services.AddTransient<PatternMatch>();
