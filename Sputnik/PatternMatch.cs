@@ -5,7 +5,7 @@ namespace Sputnik
     internal class PatternMatch(IInputListener inputListener, IShapeDrawer shapeDrawer) : IMiniGame
     {
         public string Name => "Pattern Match";
-
+        private readonly int _maxRounds = 10;
         private int _roundsWon = 0;
 
         public async Task Play(CancellationToken token)
@@ -14,7 +14,7 @@ namespace Sputnik
 
             var timeoutTask = Task.Delay(15000);
             
-            while (!timeoutTask.IsCompleted && !token.IsCancellationRequested)
+            while (_roundsWon < _maxRounds && !timeoutTask.IsCompleted && !token.IsCancellationRequested)
             {
                 var matchingIndexes = shapeDrawer.DrawShapeSequence(3, 4);
                 Console.WriteLine("Which two are the same?");
@@ -50,9 +50,9 @@ namespace Sputnik
                     Console.WriteLine("Time's up!");
                     break;
                 }
-                var totalScore = RoundsScoreCalculator.CalculateScore(_roundsWon);
-                Console.WriteLine($"Total Score: {totalScore}");
             }
+            var totalScore = RoundsScoreCalculator.CalculateScore(_roundsWon);
+            Console.WriteLine($"Total Score: {totalScore}");
         }
         public int[]? ListenForNumberInput(CancellationToken token)
         {
