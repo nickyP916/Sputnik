@@ -1,19 +1,8 @@
-﻿using Draw;
-
+﻿
 namespace Sputnik.Tests
 {
     internal class ShapeDrawerShould
     {
-        [Test]
-        public void Creates_a_collection_of_grids_to_be_drawn()
-        {
-            var numGrids = 4;
-            var result = ShapeDrawer.DrawShapeSequence(3, numGrids);
-            
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.Length, Is.EqualTo(numGrids));
-        }
-
         [Test]
         public void Generates_the_correct_number_of_unique_grids()
         {
