@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Sputnik.Services;
 
 namespace Sputnik
@@ -6,9 +7,11 @@ namespace Sputnik
     internal class Program
     {
         private static CancellationTokenSource _cts = new();
-
+        public static GameSettings GameSettings { get; private set; }
         static async Task Main(string[] args)
         {
+            ConfigureSettings();
+
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             var services = new ServiceCollection();
@@ -30,7 +33,18 @@ namespace Sputnik
             {
                 Console.WriteLine("Exiting");
             }
-            
+
+        }
+
+        private static void ConfigureSettings()
+        {
+            var builder = new ConfigurationBuilder()
+                                 .SetBasePath(Directory.GetCurrentDirectory())
+                                 .AddJsonFile("appsettings.json", optional: false);
+
+            IConfiguration config = builder.Build();
+
+            GameSettings = config.GetSection("GameSettings").Get<GameSettings>();
         }
 
         private static void Console_CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
