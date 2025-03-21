@@ -2,6 +2,7 @@
 {
     public interface IInputListener
     {
-        public string? ListenForInput(CancellationToken token);
+        string? ListenForInput(CancellationToken token);
+        int? ListenForNumberInput(CancellationToken token);
     }
 }

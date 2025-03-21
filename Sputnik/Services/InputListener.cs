@@ -16,5 +16,14 @@ namespace Sputnik.Services
             }
             throw new OperationCanceledException();
         }
+
+        public int? ListenForNumberInput(CancellationToken token)
+        {
+            var input = ListenForInput(token);
+            if (int.TryParse(input, out var answer))
+                return answer;
+            else
+                return null;
+        }
     }
 }
