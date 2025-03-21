@@ -58,6 +58,7 @@ namespace Sputnik
             services.AddSingleton<IInputListener, InputListener>();
             services.AddSingleton<IShapeDrawer, ShapeDrawer>();
             services.AddSingleton<IConsoleService , ConsoleService>();
+            services.AddSingleton<IPlayMechanicsService, PlayMechanicsService>();
             services.AddTransient<WordHunt>();
             services.AddTransient<NumberCrunch>();
             services.AddTransient<PatternMatch>();
