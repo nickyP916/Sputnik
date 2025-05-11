@@ -19,7 +19,7 @@ namespace Sputnik.Services
             //_timeout = _settings.DefaultTimeout;
 
             _maxRounds = 10;
-            _timeout = 5000;
+            _timeout = 10000;
         }
         public async Task<int> PlayToMaxRounds(GameInstructions instructions, CancellationToken token)
         {
@@ -31,7 +31,7 @@ namespace Sputnik.Services
 
             while (_roundsWon < _maxRounds && !token.IsCancellationRequested)
             {
-                setup.Invoke();
+                var inputs = setup.Invoke();
 
                 var cts = new CancellationTokenSource();
                 var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
@@ -41,7 +41,8 @@ namespace Sputnik.Services
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        if (inputTask.Result != null && logic((int)inputTask.Result))
+                        var guess = (int)inputTask.Result!;
+                        if (inputTask.Result != null && logic(inputs,guess))
                         {
                             Console.WriteLine("Correct!");
                             _roundsWon++;
@@ -53,7 +54,7 @@ namespace Sputnik.Services
                 }
                 else
                 {
-                    cts.Cancel();
+                    await cts.CancelAsync();
                     var position = Console.CursorTop;
                     Console.SetCursorPosition(0, position + 1);
 
