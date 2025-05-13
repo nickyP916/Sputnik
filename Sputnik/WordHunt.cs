@@ -2,59 +2,57 @@
 
 namespace Sputnik
 {
-    internal class WordHunt(IInputListener inputListener) : IMiniGame
+    internal class WordHunt(IInputListener inputListener, IPlayMechanicsService playMechanicsService) : IMiniGame
     {
         public string Name => "Word Hunt";
 
-        private const int minWordLength = 2;
+        private const int MinWordLength = 2;
 
         public async Task Play(CancellationToken token)
         {
-            Console.WriteLine($"You are playing {Name}!");
-            List<string> words = new();
-            var letters = LetterGenerator.Generate(new Random());
-            Console.WriteLine("Enter as many words as you can from the word:");
-            Console.WriteLine(letters);
-            var timeoutTask = Task.Delay(5000);
-            while(!timeoutTask.IsCompleted && !token.IsCancellationRequested) 
+            var instructions = new GameInstructions
             {
-                var cts = new CancellationTokenSource();
-                var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
-                var inputTask = Task.Run(() => inputListener.ListenForInput(combinedTcs.Token));
-                var completedTask = await Task.WhenAny(timeoutTask, inputTask);
+                InputListener = inputListener,
+                ScoreLogic = ScoreLogic,
+                Setup = Setup
+            };
+            await playMechanicsService.PlayToMaxRounds(instructions, token);
 
-                if (completedTask == inputTask)
-                {
-                    var word = await inputTask;
-                    if(word != null)
-                    {
-                        var isValid = await WordValidator.Validate(word, letters);
-                        if (isValid)
-                        {
-                            words.Add(word);
-                            var points = WordHuntScoreCalculator.Calculate(word, minWordLength, letters.Length);
-                            Console.WriteLine(points + " points!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid word");
-                        }
-                    }
-                }
-                else
-                {
-                    cts.Cancel();  
 
-                    var position = Console.CursorTop;
-                    Console.SetCursorPosition(0, position + 1);
-
-                    Console.WriteLine("Time's up!");
-                    break;
-                }
-                
-            }
             var totalScore = WordHuntScoreCalculator.GetFinalScore();
             Console.WriteLine($"Total Score: {totalScore}");
+        }
+
+        private static string Setup()
+        {
+            var letters = LetterGenerator.Generate(new Random());
+            Console.WriteLine("Enter as many words as you can from the letters:");
+            Console.WriteLine(letters);
+
+            return letters;
+        }
+
+        private async Task<bool> ScoreLogic(object input, string? guess)
+        {
+            var letters = (string)input;
+
+            if (guess == null)
+                return false;
+
+            var word = guess;
+
+            var isValid = await WordValidator.Validate(word, letters);
+            if (isValid)
+            {
+                var points = WordHuntScoreCalculator.Calculate(word, MinWordLength, letters.Length);
+                Console.WriteLine(points + " points!");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Invalid word");
+                return false;
+            }
         }
     }
 }

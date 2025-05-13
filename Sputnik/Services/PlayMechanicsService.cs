@@ -35,14 +35,13 @@ namespace Sputnik.Services
 
                 var cts = new CancellationTokenSource();
                 var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
-                var inputTask = Task.Run(() => inputListener.ListenForNumberInput(combinedTcs.Token));
+                var inputTask = Task.Run(() => inputListener.ListenForInput(combinedTcs.Token));
 
                 if (await Task.WhenAny(inputTask, Task.Delay(_timeout)) == inputTask)
                 {
                     if (!token.IsCancellationRequested)
                     {
-                        var guess = (int)inputTask.Result!;
-                        if (inputTask.Result != null && logic(inputs,guess))
+                        if (inputTask.Result != null && await logic(inputs,inputTask.Result))
                         {
                             Console.WriteLine("Correct!");
                             _roundsWon++;

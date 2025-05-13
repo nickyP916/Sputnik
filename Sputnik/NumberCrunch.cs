@@ -31,10 +31,18 @@ namespace Sputnik
             return new Tuple<int, int>(number1, number2);
         }
 
-        private static bool ScoreLogic(object inputs, object guess)
+        private static Task<bool> ScoreLogic(object inputs, string? guess)
         {
-            var numberInputs = (Tuple<int, int>)inputs;
-            return numberInputs.Item1 + numberInputs.Item2 == (int)guess;
+            if (int.TryParse(guess, out var numberGuess))
+            {
+                var numberInputs = (Tuple<int, int>)inputs;
+                return Task.FromResult(numberInputs.Item1 + numberInputs.Item2 == (int)numberGuess);
+            }
+            else
+            {
+                return Task.FromResult(false);
+            }
+                
         }
     }
 }
