@@ -10,13 +10,15 @@ namespace Sputnik
 
         public async Task Play(CancellationToken token)
         {
+            Console.WriteLine($"You are playing {Name}!");
+
             var instructions = new GameInstructions
             {
                 ScoreLogic = ScoreLogic,
                 Setup = Setup
             };
+            
             await playMechanicsService.PlayToMaxRounds(instructions, token);
-
 
             var totalScore = WordHuntScoreCalculator.GetFinalScore();
             Console.WriteLine($"Total Score: {totalScore}");
@@ -31,7 +33,7 @@ namespace Sputnik
             return letters;
         }
 
-        private async Task<bool> ScoreLogic(object input, string? guess)
+        private static async Task<bool> ScoreLogic(object input, string? guess)
         {
             var letters = (string)input;
 

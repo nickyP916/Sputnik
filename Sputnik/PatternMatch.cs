@@ -5,8 +5,6 @@ namespace Sputnik
     internal class PatternMatch(IShapeDrawer shapeDrawer, IPlayMechanicsService playMechanicsService) : IMiniGame
     {
         public string Name => "Pattern Match";
-        private readonly int _maxRounds = 10;
-        private int _roundsWon = 0;
 
         public async Task Play(CancellationToken token)
         {
@@ -17,13 +15,14 @@ namespace Sputnik
                 ScoreLogic = ScoreLogic,
                 Setup = Setup
             };
-            await playMechanicsService.PlayToMaxRounds(instructions, token);
 
-            var totalScore = RoundsScoreCalculator.CalculateScore(_roundsWon);
+            var roundsWon = await playMechanicsService.PlayToMaxRounds(instructions, token);
+
+            var totalScore = RoundsScoreCalculator.CalculateScore(roundsWon);
             Console.WriteLine($"Total Score: {totalScore}");
         }
 
-        private object Setup()
+        private int[] Setup()
         {
             var matchingIndexes = shapeDrawer.DrawShapeSequence(3, 4);
             Console.WriteLine("Which two are the same?");
@@ -43,7 +42,7 @@ namespace Sputnik
             return Task.FromResult( indexesGuess.Order().SequenceEqual(matchingIndexes.Order()));
         }
 
-        private static int[]? ConvertStringInputToNumbers(string? input)
+        public int[]? ConvertStringInputToNumbers(string? input)
         {
             var results = new int[2];
             if (input!= null && input.Length == 2)

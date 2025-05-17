@@ -5,18 +5,20 @@ namespace Sputnik
     internal class NumberCrunch(IPlayMechanicsService playMechanicsService) : IMiniGame
     {
         public string Name => "Number Crunch";
-        private const int RoundsWon = 0;
 
         public async Task Play(CancellationToken token)
         {
+            Console.WriteLine($"You are playing {Name}!");
+
             var instructions = new GameInstructions
             {
                 ScoreLogic = ScoreLogic,
                 Setup = Setup
             };
-            await playMechanicsService.PlayToMaxRounds(instructions, token);
 
-            var totalScore = RoundsScoreCalculator.CalculateScore(RoundsWon);
+            var roundsWon = await playMechanicsService.PlayToMaxRounds(instructions, token);
+
+            var totalScore = RoundsScoreCalculator.CalculateScore(roundsWon);
             Console.WriteLine($"Total Score: {totalScore}");
         }
 
