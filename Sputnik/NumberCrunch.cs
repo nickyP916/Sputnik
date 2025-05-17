@@ -2,7 +2,7 @@
 
 namespace Sputnik
 {
-    internal class NumberCrunch(IPlayMechanicsService playMechanics) : IMiniGame
+    internal class NumberCrunch(IPlayMechanicsService playMechanicsService) : IMiniGame
     {
         public string Name => "Number Crunch";
         private const int RoundsWon = 0;
@@ -14,7 +14,7 @@ namespace Sputnik
                 ScoreLogic = ScoreLogic,
                 Setup = Setup
             };
-            await playMechanics.PlayToMaxRounds(instructions, token);
+            await playMechanicsService.PlayToMaxRounds(instructions, token);
 
             var totalScore = RoundsScoreCalculator.CalculateScore(RoundsWon);
             Console.WriteLine($"Total Score: {totalScore}");

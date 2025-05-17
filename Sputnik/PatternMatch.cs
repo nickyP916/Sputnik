@@ -2,7 +2,7 @@
 
 namespace Sputnik
 {
-    internal class PatternMatch(IInputListener inputListener, IShapeDrawer shapeDrawer) : IMiniGame
+    internal class PatternMatch(IShapeDrawer shapeDrawer, IPlayMechanicsService playMechanicsService) : IMiniGame
     {
         public string Name => "Pattern Match";
         private readonly int _maxRounds = 10;
@@ -12,51 +12,39 @@ namespace Sputnik
         {
             Console.WriteLine($"You are playing {Name}!");
 
-            var timeoutTask = Task.Delay(15000);
-            
-            while (_roundsWon < _maxRounds && !timeoutTask.IsCompleted && !token.IsCancellationRequested)
+            var instructions = new GameInstructions
             {
-                var matchingIndexes = shapeDrawer.DrawShapeSequence(3, 4);
-                Console.WriteLine("Which two are the same?");
-                var cts = new CancellationTokenSource();
-                var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
-                var inputTask = Task.Run(() => ListenForNumberInput(combinedTcs.Token));
-                var completedTask = await Task.WhenAny(timeoutTask, inputTask);
+                ScoreLogic = ScoreLogic,
+                Setup = Setup
+            };
+            await playMechanicsService.PlayToMaxRounds(instructions, token);
 
-                if (completedTask == inputTask)
-                {
-                    var response = await inputTask;
-                    if(response != null)
-                    {
-                        var indexResponse = response.Select(x => x - 1).ToArray();
-                        if (indexResponse!.Order().SequenceEqual(matchingIndexes.Order()))
-                        {
-                            Console.WriteLine("Correct!");
-                            _roundsWon++;
-    }
-                        else
-                            Console.WriteLine("Incorrect!");
-                    }
-                    else
-                        Console.WriteLine("enter two numbers");
-                }
-                else
-                {
-                    cts.Cancel();
-                    
-                    var position = Console.CursorTop;
-                    Console.SetCursorPosition(0, position + 1);
-
-                    Console.WriteLine("Time's up!");
-                    break;
-                }
-            }
             var totalScore = RoundsScoreCalculator.CalculateScore(_roundsWon);
             Console.WriteLine($"Total Score: {totalScore}");
         }
-        public int[]? ListenForNumberInput(CancellationToken token)
+
+        private object Setup()
         {
-            var input = inputListener.ListenForInput(token);
+            var matchingIndexes = shapeDrawer.DrawShapeSequence(3, 4);
+            Console.WriteLine("Which two are the same?");
+
+            return matchingIndexes;
+        }
+
+        private Task<bool> ScoreLogic(object inputs, string? guess)
+        {
+            var matchingIndexes = (int[])inputs;
+
+            var numbersGuess = ConvertStringInputToNumbers(guess);
+            if (numbersGuess == null)
+                return Task.FromResult(false);
+
+            var indexesGuess = numbersGuess.Select(x => x - 1).ToArray();
+            return Task.FromResult( indexesGuess.Order().SequenceEqual(matchingIndexes.Order()));
+        }
+
+        private static int[]? ConvertStringInputToNumbers(string? input)
+        {
             var results = new int[2];
             if (input!= null && input.Length == 2)
             {
@@ -75,8 +63,8 @@ namespace Sputnik
 
                 return results;
             }
-            else
-                return null;
+
+            return null;
         }
 
     }

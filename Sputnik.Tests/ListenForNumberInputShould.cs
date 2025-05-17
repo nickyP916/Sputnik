@@ -12,11 +12,12 @@ namespace Sputnik.Tests
         {
             var fakeInputListener = A.Fake<IInputListener>();
             var fakeShapeDrawer = A.Fake<IShapeDrawer>();
-            var patternMatch = new PatternMatch(fakeInputListener, fakeShapeDrawer);
+            var playMechanicsService = A.Fake<IPlayMechanicsService>();
+            var patternMatch = new PatternMatch(fakeShapeDrawer, playMechanicsService);
 
             A.CallTo(() => fakeInputListener.ListenForInput(A<CancellationToken>.Ignored)).Returns(consoleInput);
 
-            var result = patternMatch.ListenForNumberInput(new CancellationToken());
+            var result = patternMatch.ConvertStringInputToNumbers(consoleInput);
 
             Assert.That(result, Is.EquivalentTo(expected));
         }
@@ -28,11 +29,12 @@ namespace Sputnik.Tests
         {
             var fakeInputListener = A.Fake<IInputListener>();
             var fakeShapeDrawer = A.Fake<IShapeDrawer>();
-            var patternMatch = new PatternMatch(fakeInputListener, fakeShapeDrawer);
+            var playMechanicsService = A.Fake<IPlayMechanicsService>();
+            var patternMatch = new PatternMatch(fakeShapeDrawer, playMechanicsService);
 
             A.CallTo(() => fakeInputListener.ListenForInput(A<CancellationToken>.Ignored)).Returns(consoleInput);
 
-            var result = patternMatch.ListenForNumberInput(new CancellationToken());
+            var result = patternMatch.ConvertStringInputToNumbers(consoleInput);
 
             Assert.That(result, Is.Null);
         }
