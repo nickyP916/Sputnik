@@ -1,18 +1,18 @@
-﻿using Microsoft.Extensions.Options;
-
-namespace Sputnik.Services
+﻿namespace Sputnik.Services
 {
     public class PlayMechanicsService : IPlayMechanicsService
     {
+        private readonly IInputListener _inputListener;
         private readonly int _maxRounds;
         private readonly int _timeout;
 
         private int _roundsWon = 0;
 
-        private readonly GameSettings _settings;
+        //private readonly GameSettings _settings;
 
-        public PlayMechanicsService()
+        public PlayMechanicsService(IInputListener inputListener)
         {
+            this._inputListener = inputListener;
             //TODO get IOptions working - neeed Microsoft.Extensions.DependencyInjection and Microsoft.Extensions.Options.ConfigurationExtensions
             //_settings = gameSettings.Value;
             //_maxRounds = _settings.DefaultMaxRounds;
@@ -23,7 +23,6 @@ namespace Sputnik.Services
         }
         public async Task<int> PlayToMaxRounds(GameInstructions instructions, CancellationToken token)
         {
-            var inputListener = instructions.InputListener;
             var logic = instructions.ScoreLogic;
             var setup = instructions.Setup;
 
@@ -35,7 +34,7 @@ namespace Sputnik.Services
 
                 var cts = new CancellationTokenSource();
                 var combinedTcs = CancellationTokenSource.CreateLinkedTokenSource(token, cts.Token);
-                var inputTask = Task.Run(() => inputListener.ListenForInput(combinedTcs.Token));
+                var inputTask = Task.Run(() => _inputListener.ListenForInput(combinedTcs.Token));
 
                 if (await Task.WhenAny(inputTask, Task.Delay(_timeout)) == inputTask)
                 {

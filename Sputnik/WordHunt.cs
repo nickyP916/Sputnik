@@ -2,7 +2,7 @@
 
 namespace Sputnik
 {
-    internal class WordHunt(IInputListener inputListener, IPlayMechanicsService playMechanicsService) : IMiniGame
+    internal class WordHunt(IPlayMechanicsService playMechanicsService) : IMiniGame
     {
         public string Name => "Word Hunt";
 
@@ -12,7 +12,6 @@ namespace Sputnik
         {
             var instructions = new GameInstructions
             {
-                InputListener = inputListener,
                 ScoreLogic = ScoreLogic,
                 Setup = Setup
             };

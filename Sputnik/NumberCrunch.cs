@@ -2,7 +2,7 @@
 
 namespace Sputnik
 {
-    internal class NumberCrunch(IInputListener inputListener, IPlayMechanicsService playMechanics) : IMiniGame
+    internal class NumberCrunch(IPlayMechanicsService playMechanics) : IMiniGame
     {
         public string Name => "Number Crunch";
         private const int RoundsWon = 0;
@@ -11,7 +11,6 @@ namespace Sputnik
         {
             var instructions = new GameInstructions
             {
-                InputListener = inputListener,
                 ScoreLogic = ScoreLogic,
                 Setup = Setup
             };
