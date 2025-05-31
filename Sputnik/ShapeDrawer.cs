@@ -34,14 +34,26 @@ namespace Sputnik
             var gapsPerGrid = gridWidth * xGapSize;
 
             var gridTop = consoleService.CursorTop;
+            bool bottomReached = false;
             for (int g = 0; g < numGrids; g++)
             {
                 int gridLeft = (gridWidth + gapsPerGrid + gridGapSize) * g;
-                consoleService.SetCursorPosition(gridLeft, gridTop);
+
+                if (bottomReached)
+                {
+                    var topOfRow = consoleService.CursorTop - (gridHeight - 1);
+                    consoleService.SetCursorPosition(gridLeft, topOfRow);
+                    bottomReached = false;
+                    gridTop = consoleService.CursorTop;
+                }
+                else
+                {
+                    consoleService.SetCursorPosition(gridLeft, consoleService.CursorTop);
+                }
 
                 for (int y = 0; y < gridHeight; y++)
                 {
-                    consoleService.SetCursorPosition(gridLeft, gridTop + y); //Hitting System Argument exc, buffer size? related to console size perhaps?
+                    consoleService.SetCursorPosition(gridLeft, gridTop + y);
 
                     for (int x = 0; x < gridWidth; x++)
                     {
@@ -56,6 +68,8 @@ namespace Sputnik
                         consoleService.SetCursorPosition(consoleService.CursorLeft + xGapSize, consoleService.CursorTop);
                     }
                 }
+
+                bottomReached = true;
             }
 
             consoleService.SetCursorPosition(0, consoleService.CursorTop + 1);
