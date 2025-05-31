@@ -12,6 +12,7 @@ namespace Sputnik
         {
             ConfigureSettings();
 
+            Console.SetBufferSize(120, 30);
             Console.CancelKeyPress += Console_CancelKeyPress;
 
             var services = new ServiceCollection();
