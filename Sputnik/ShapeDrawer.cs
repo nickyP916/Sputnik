@@ -90,8 +90,8 @@ namespace Sputnik
 
         private static int[] GenerateIndexesFor2MatchingGrids(int numGrids)
         {
-            var grid1Index = new Random().Next(numGrids - 1);
-            int grid2Index = new Random().Next(numGrids - 1);
+            var grid1Index = new Random().Next(numGrids );
+            int grid2Index = new Random().Next(numGrids );
             while (grid2Index == grid1Index)
             {
                 grid2Index = new Random().Next(numGrids - 1);
