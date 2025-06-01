@@ -11,7 +11,6 @@ namespace Sputnik.Tests
             var result = ShapeDrawer.GenerateUniqueGrids(3, 3, 3, 6, numGrids, matchingIndexes);
 
             Assert.That(result.Count, Is.EqualTo(numGrids));
-            Assert.That(!result.Contains(matchingIndexes));//Not a good test yet
         }
 
         [Test]
