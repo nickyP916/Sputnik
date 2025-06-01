@@ -7,9 +7,11 @@ namespace Sputnik.Tests
         public void Generates_the_correct_number_of_unique_grids()
         {
             var numGrids = 4;
-            var result = ShapeDrawer.GenerateUniqueGrids(3, 3, 3, 6, numGrids);
+            var matchingIndexes = new[,] {{true, false}, {true, false}};
+            var result = ShapeDrawer.GenerateUniqueGrids(3, 3, 3, 6, numGrids, matchingIndexes);
 
             Assert.That(result.Count, Is.EqualTo(numGrids));
+            Assert.That(!result.Contains(matchingIndexes));//Not a good test yet
         }
 
         [Test]

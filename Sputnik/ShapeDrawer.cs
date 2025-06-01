@@ -4,12 +4,11 @@ namespace Sputnik
 {
     public class ShapeDrawer(IConsoleService consoleService) : IShapeDrawer
     {
-        static readonly char shape = '\u25A0';
-        static readonly ConsoleColor colour = ConsoleColor.Blue;
-        static readonly ConsoleColor markColour = ConsoleColor.Green;
-        static readonly int gridGapSize = 2;
-        static readonly int xGapSize = 1;
-        private readonly IConsoleService consoleService = consoleService;
+        private const char Shape = '\u25A0';
+        private const ConsoleColor Colour = ConsoleColor.Blue;
+        private const ConsoleColor MarkColour = ConsoleColor.Green;
+        private const int GridGapSize = 2;
+        private const int XGapSize = 1;
 
         public int[] DrawShapeSequence(int gridWidth, int numGrids)
         {
@@ -17,12 +16,12 @@ namespace Sputnik
             var minMarks = gridHeight;
             var maxMarks = gridWidth * 2;
 
-            bool[,] markPositionsPerGrid = GenerateMarkPositionsPerGrid(gridWidth, gridHeight, minMarks, maxMarks);
-            int[] matchingGridIndexes = GenerateIndexesFor2MatchingGrids(numGrids);
+            var markPositionsForMatchingGrids = GenerateMarkPositionsPerGrid(gridWidth, gridHeight, minMarks, maxMarks);
+            var matchingGridIndexes = GenerateIndexesFor2MatchingGrids(numGrids);
 
-            int numUniqueGrids = numGrids - matchingGridIndexes.Count();
-            var uniqueGrids = GenerateUniqueGrids(gridWidth, gridHeight, minMarks, maxMarks, numUniqueGrids);
-            List<bool[,]> gridList = CombineUniqueAndMatchingGrids(markPositionsPerGrid, matchingGridIndexes, uniqueGrids);
+            var numUniqueGrids = numGrids - matchingGridIndexes.Length;
+            var uniqueGrids = GenerateUniqueGrids(gridWidth, gridHeight, minMarks, maxMarks, numUniqueGrids, markPositionsForMatchingGrids);
+            var gridList = CombineUniqueAndMatchingGrids(markPositionsForMatchingGrids, matchingGridIndexes, uniqueGrids);
 
             Draw(gridWidth, gridHeight, numGrids, gridList);
 
@@ -31,45 +30,37 @@ namespace Sputnik
 
         private void Draw(int gridWidth, int gridHeight, int numGrids, List<bool[,]> gridList)
         {
-            var gapsPerGrid = gridWidth * xGapSize;
-
+            var gapsPerGrid = gridWidth * XGapSize;
             var gridTop = consoleService.CursorTop;
-            bool bottomReached = false;
-            for (int g = 0; g < numGrids; g++)
-            {
-                int gridLeft = (gridWidth + gapsPerGrid + gridGapSize) * g;
 
-                if (bottomReached)
+            consoleService.SetCursorPosition(0, consoleService.CursorTop);
+            for (var g = 0; g < numGrids; g++)
+            {
+                var gridLeft = (gridWidth + gapsPerGrid + GridGapSize) * g;
+
+                //If we've just drawn a grid, move back up to the top row to start a new grid
+                if (g != 0)
                 {
                     var topOfRow = consoleService.CursorTop - (gridHeight - 1);
                     consoleService.SetCursorPosition(gridLeft, topOfRow);
-                    bottomReached = false;
                     gridTop = consoleService.CursorTop;
                 }
-                else
-                {
-                    consoleService.SetCursorPosition(gridLeft, consoleService.CursorTop);
-                }
 
-                for (int y = 0; y < gridHeight; y++)
+                //Drawing each row of the grid
+                for (var y = 0; y < gridHeight; y++)
                 {
                     consoleService.SetCursorPosition(gridLeft, gridTop + y);
 
-                    for (int x = 0; x < gridWidth; x++)
+                    //Drawing each square in the row
+                    for (var x = 0; x < gridWidth; x++)
                     {
                         var positions = gridList.ElementAt(g);
-                        if (positions[x, y])
-                            consoleService.ForegroundColor = markColour;
-                        else
-                            consoleService.ForegroundColor = colour;
-
-                        consoleService.Write(shape);
+                        consoleService.ForegroundColor = positions[x, y] ? MarkColour : Colour;
+                        consoleService.Write(Shape);
                         consoleService.ResetColor();
-                        consoleService.SetCursorPosition(consoleService.CursorLeft + xGapSize, consoleService.CursorTop);
+                        consoleService.SetCursorPosition(consoleService.CursorLeft + XGapSize, consoleService.CursorTop);
                     }
                 }
-
-                bottomReached = true;
             }
 
             consoleService.SetCursorPosition(0, consoleService.CursorTop + 1);
@@ -79,9 +70,8 @@ namespace Sputnik
         {
             matchingGridIndexes = matchingGridIndexes.OrderBy(x => x).ToArray();
             var gridList = uniqueGrids.ToList();
-            for (int i = 0; i < matchingGridIndexes.Length; i++)
+            foreach (var matchingIndex in matchingGridIndexes)
             {
-                int matchingIndex = matchingGridIndexes[i];
                 gridList.Insert(matchingIndex, markPositionsForMatchingGrids);
             }
 
@@ -90,26 +80,27 @@ namespace Sputnik
 
         private static int[] GenerateIndexesFor2MatchingGrids(int numGrids)
         {
-            var grid1Index = new Random().Next(numGrids );
-            int grid2Index = new Random().Next(numGrids );
+            var grid1Index = new Random().Next(numGrids);
+            var grid2Index = new Random().Next(numGrids);
             while (grid2Index == grid1Index)
             {
                 grid2Index = new Random().Next(numGrids - 1);
             }
-            var matchingGridIndexes = new int[2] { grid1Index, grid2Index };
-            matchingGridIndexes.Order();
-            return matchingGridIndexes;
+
+            return [grid1Index, grid2Index];
         }
 
-        public static HashSet<bool[,]> GenerateUniqueGrids(int gridWidth, int gridHeight, int minMarks, int maxMarks, int numGrids)
+        public static HashSet<bool[,]> GenerateUniqueGrids(int gridWidth, int gridHeight, int minMarks, int maxMarks, int numGrids, bool[,] matchingGrid)
         {
             var uniqueGrids = new HashSet<bool[,]>();
-
+            var flattenedMatching = matchingGrid.Cast<bool>();
             while (uniqueGrids.Count < numGrids)
             {
-                for (int i = 0; i < numGrids; i++)
+                var generateMarkPositionsPerGrid = GenerateMarkPositionsPerGrid(gridWidth, gridHeight, minMarks, maxMarks);
+                var flattenedUnique = generateMarkPositionsPerGrid.Cast<bool>();
+                if (!flattenedUnique.SequenceEqual(flattenedMatching))
                 {
-                    uniqueGrids.Add(GenerateMarkPositionsPerGrid(gridWidth, gridHeight, minMarks, maxMarks));
+                    uniqueGrids.Add(generateMarkPositionsPerGrid);
                 }
             }
 
@@ -118,11 +109,11 @@ namespace Sputnik
 
         public static bool[,] GenerateMarkPositionsPerGrid(int gridWidth, int gridHeight, int minMarks, int maxMarks)
         {
-            bool[,] markPositions = new bool[gridWidth, gridHeight];
+            var markPositions = new bool[gridWidth, gridHeight];
 
             var numMarks = new Random().Next(minMarks, maxMarks);
 
-            for (int i = 0; i < numMarks; i++)
+            for (var i = 0; i < numMarks; i++)
             {
                 var xPos = new Random().Next(gridWidth);
                 var yPos = new Random().Next(gridHeight);
